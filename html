@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Online Games</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: #000;
+    font-family: Arial, sans-serif;
+}
+
+#title {
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 25px 45px;
+    background: rgb(20, 20, 20);
+    border-radius: 25px;
+    border: 4px solid rgba(255,255,255,0.25);
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 55px;
+    color: white;
+    z-index: 10;
+    letter-spacing: 4px;
+    text-shadow: 0 0 15px rgba(255,255,255,0.7);
+}
+
+/* CENTER 2 BIG SQUARES */
+#gamesContainer {
+    position: relative;
+    top: 200px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    z-index: 10;
+}
+
+.gameBox {
+    width: 330px;
+    height: 330px;
+    background: rgba(20, 20, 20, 0.85);
+    border-radius: 25px;
+    border: 3px solid rgba(255,255,255,0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease;
+    padding: 20px;
+}
+
+/* Hover Grow Animation */
+.gameBox:hover {
+    transform: scale(1.08);
+    background: rgba(40, 40, 40, 0.9);
+}
+
+.gameText {
+    font-size: 22px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: white;
+}
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+</style>
+</head>
+<body>
+
+<div id="title">Online Games</div>
+
+<div id="gamesContainer">
+
+    <!-- Converted to GitHub subpages -->
+    <div class="gameBox" onclick="window.open('/online-games/1v1-lol.html', '_blank')">
+        <div class="gameText">1v1.lol</div>
+        Cheap Fortnite copy
+    </div>
+
+    <div class="gameBox" onclick="window.open('/online-games/minecraft.html', '_blank')">
+        <div class="gameText">Minecraft</div>
+        Eaglercraft game
+    </div>
+
+    <div class="gameBox" onclick="window.open('/online-games/smash-karts.html', '_blank')">
+        <div class="gameText">Smash Karts</div>
+        Go against your friends in a kart battle game!
+    </div>
+
+</div>
+
+<canvas id="triCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('triCanvas');
+const ctx = canvas.getContext('2d');
+let w, h;
+let triangles = [];
+let mouse = { x: 0, y: 0 };
+
+function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    generateTriangles();
+}
+window.addEventListener('resize', resize);
+window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+function generateTriangles() {
+    triangles = [];
+    const base = 140;
+    for (let row = 0; row < Math.ceil(h / (base * 0.9)) + 4; row++) {
+        for (let col = 0; col < Math.ceil(w / base) + 4; col++) {
+            let size = base + (Math.random() * 40 - 20);
+            let x = col * base + (row % 2 === 0 ? 0 : base / 2);
+            let y = row * (base * 0.9);
+            triangles.push({ x, y, size, rotation: Math.random() * Math.PI * 2 });
+        }
+    }
+}
+function drawTriangle(t) {
+    const dist = Math.hypot(mouse.x - t.x, mouse.y - t.y);
+    const brightness = Math.max(30, 255 - dist * 0.22);
+    ctx.fillStyle = `rgb(${brightness}, ${brightness}, ${brightness})`;
+    ctx.save();
+    ctx.translate(t.x, t.y);
+    ctx.rotate(t.rotation);
+    ctx.beginPath();
+    ctx.moveTo(0, -t.size / 2);
+    ctx.lineTo(-t.size / 1.6, t.size / 2);
+    ctx.lineTo(t.size / 1.6, t.size / 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
+function animate() {
+    ctx.clearRect(0, 0, w, h);
+    for (let t of triangles) drawTriangle(t);
+    requestAnimationFrame(animate);
+}
+
+resize();
+animate();
+</script>
+
+</body>
+</html>
